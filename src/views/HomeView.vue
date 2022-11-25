@@ -19,7 +19,10 @@
         <custom-input v-model="receiveInput" placeholder="Receive" />
       </div>
     </div>
-    {{ error }}
+    <div class="min-h-[25px]">
+      <span v-if="error" class="text-red-400">{{ error }}</span>
+    </div>
+    <custom-button @click="onClickBtn">GO</custom-button>
   </div>
 </template>
 
@@ -29,14 +32,15 @@ export default {
   name: "HomeView",
   rx_live: /^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/,
   needNumberMessage: "You need to enter only positive numbers in both fields!",
+  matchSelectMessage: "You can not select same currency!",
 
   data() {
     return {
       currencyOptions,
       exchangeSelect: currencyOptions[0].value,
       receiveSelect: currencyOptions[1].value,
-      exchangeInput: "",
-      receiveInput: "",
+      exchangeInput: "0",
+      receiveInput: "0",
       error: "",
     };
   },
@@ -52,25 +56,35 @@ export default {
     //     },
     //   });
     // },
-    checkInputsData(message) {
+    validateInputParams() {
       const isOkReceive = this.$options.rx_live.test(this.receiveInput);
       const isOkExchange = this.$options.rx_live.test(this.exchangeInput);
+      const isMatchedSelect = this.exchangeSelect !== this.receiveSelect;
 
-      if (isOkExchange && isOkReceive) {
+      if (isOkExchange && isOkReceive && isMatchedSelect) {
         this.error = "";
         return;
       }
-      this.error = message;
+
+      this.error = !isMatchedSelect
+        ? this.$options.matchSelectMessage
+        : this.$options.needNumberMessage;
+    },
+
+    onClickBtn() {
+      console.log("Changed!");
     },
   },
-
   watch: {
-    receiveInput() {
-      this.checkInputsData(this.$options.needNumberMessage);
-    },
     exchangeInput() {
-      this.checkInputsData(this.$options.needNumberMessage);
+      console.log(this.exchangeInput);
     },
+    receiveInput() {
+      console.log(this.receiveInput);
+    },
+  },
+  updated() {
+    this.validateInputParams();
   },
 };
 </script>
