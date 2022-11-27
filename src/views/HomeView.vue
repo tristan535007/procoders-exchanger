@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-[1200px] mx-auto flex items-center flex-col">
+  <div class="max-w-[1200px] mx-auto flex items-center flex-col px-5">
     <h1 class="text-2xl">Exchanger</h1>
     <div class="my-24 flex justify-between w-full">
       <div>
@@ -14,7 +14,16 @@
     <div class="min-h-[25px]">
       <span v-if="error" class="text-red-400">{{ error }}</span>
     </div>
-    <custom-button @click="onClickBtn">GO</custom-button>
+    <custom-button @click="onClickBtn" :error="error">GO</custom-button>
+    <div class="flex justify-between w-full">
+      <exchange-rate-card :change-type="exchangeSelect" :receive-type="receiveSelect" />
+      <reserved-info-card>
+        <div v-if="reservedData.reserved">
+          {{ reservedData.reserved + " " + reservedData.name }}
+        </div>
+        <div v-else>----</div>
+      </reserved-info-card>
+    </div>
   </div>
 </template>
 
@@ -25,10 +34,19 @@ import {
   needNumberMessage,
   matchSelectMessage,
   exchangeRate,
+  lackVolume,
 } from "@/constants";
+import ExchangeRateCard from "@/components/ExchangeRateCard";
+import ReservedInfoCard from "@/components/ReservedInfoCard";
+
 export default {
   name: "HomeView",
   initPrice: "0",
+
+  components: {
+    ExchangeRateCard,
+    ReservedInfoCard,
+  },
 
   data() {
     return {
@@ -53,16 +71,21 @@ export default {
     //   });
     // },
     validateInputParams() {
+      const { isMatchedSelect, receiveData } = this.initialExchangeData;
       const isOkReceive = rx_live.test(this.receiveInput);
       const isOkExchange = rx_live.test(this.exchangeInput);
-      const isMatchedSelect = this.exchangeSelect !== this.receiveSelect;
+      const isOkVolume = receiveData?.reserved ? +this.receiveInput < +receiveData.reserved : true;
 
-      if (isOkExchange && isOkReceive && isMatchedSelect) {
+      if (isOkExchange && isOkReceive && isMatchedSelect && isOkVolume) {
         this.error = "";
         return;
       }
 
-      this.error = !isMatchedSelect ? matchSelectMessage : needNumberMessage;
+      this.error = !isMatchedSelect
+        ? matchSelectMessage
+        : !isOkExchange || !isOkReceive
+        ? needNumberMessage
+        : lackVolume;
     },
 
     onClickBtn() {
@@ -80,6 +103,9 @@ export default {
         exchangeData,
         receiveData,
       };
+    },
+    reservedData() {
+      return exchangeRate.find((d) => d.id === this.receiveSelect);
     },
   },
   watch: {
@@ -100,6 +126,7 @@ export default {
       if (!isNaN(+this.receiveInput) && isMatchedSelect) {
         if (receiveData.rate > exchangeData.rate) {
           this.exchangeInput = (this.receiveInput * receiveData.rate).toString();
+
           return;
         }
         this.exchangeInput = (this.receiveInput / exchangeData.rate).toString();
