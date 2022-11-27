@@ -3,12 +3,30 @@
     <h1 class="text-2xl">Exchanger</h1>
     <div class="my-24 flex justify-between w-full">
       <div>
-        <custom-select v-model="exchangeSelect" class="mr-4" :options="currencyOptions" />
-        <custom-input v-model="exchangeInput" placeholder="Exchange" />
+        <custom-select
+          v-model="exchangeSelect"
+          :class="{ 'border-2 border-rose-500': lackVolumeError }"
+          class="mr-4"
+          :options="currencyOptions"
+        />
+        <custom-input
+          :class="{ 'border-2 border-rose-500': lackVolumeError }"
+          v-model="exchangeInput"
+          placeholder="Exchange"
+        />
       </div>
       <div>
-        <custom-select v-model="receiveSelect" class="mr-4" :options="currencyOptions" />
-        <custom-input v-model="receiveInput" placeholder="Receive" />
+        <custom-select
+          v-model="receiveSelect"
+          :class="{ 'border-2 border-rose-500': lackVolumeError }"
+          class="mr-4"
+          :options="currencyOptions"
+        />
+        <custom-input
+          :class="{ 'border-2 border-rose-500': lackVolumeError }"
+          v-model="receiveInput"
+          placeholder="Receive"
+        />
       </div>
     </div>
     <div class="min-h-[25px]">
@@ -71,10 +89,9 @@ export default {
     //   });
     // },
     validateInputParams() {
-      const { isMatchedSelect, receiveData } = this.initialExchangeData;
+      const { isMatchedSelect, isOkVolume } = this.initialExchangeData;
       const isOkReceive = rx_live.test(this.receiveInput);
       const isOkExchange = rx_live.test(this.exchangeInput);
-      const isOkVolume = receiveData?.reserved ? +this.receiveInput < +receiveData.reserved : true;
 
       if (isOkExchange && isOkReceive && isMatchedSelect && isOkVolume) {
         this.error = "";
@@ -97,15 +114,20 @@ export default {
       const isMatchedSelect = this.exchangeSelect !== this.receiveSelect;
       const exchangeData = exchangeRate.find((c) => c.id === this.exchangeSelect);
       const receiveData = exchangeRate.find((c) => c.id === this.receiveSelect);
+      const isOkVolume = receiveData?.reserved ? +this.receiveInput < +receiveData.reserved : true;
 
       return {
         isMatchedSelect,
         exchangeData,
         receiveData,
+        isOkVolume,
       };
     },
     reservedData() {
       return exchangeRate.find((d) => d.id === this.receiveSelect);
+    },
+    lackVolumeError() {
+      return this.error === lackVolume;
     },
   },
   watch: {
