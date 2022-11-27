@@ -3,19 +3,11 @@
     <h1 class="text-2xl">Exchanger</h1>
     <div class="my-24 flex justify-between w-full">
       <div>
-        <custom-select
-          v-model="exchangeSelect"
-          class="mr-4"
-          :options="currencyOptions"
-        />
+        <custom-select v-model="exchangeSelect" class="mr-4" :options="currencyOptions" />
         <custom-input v-model="exchangeInput" placeholder="Exchange" />
       </div>
       <div>
-        <custom-select
-          v-model="receiveSelect"
-          class="mr-4"
-          :options="currencyOptions"
-        />
+        <custom-select v-model="receiveSelect" class="mr-4" :options="currencyOptions" />
         <custom-input v-model="receiveInput" placeholder="Receive" />
       </div>
     </div>
@@ -27,20 +19,24 @@
 </template>
 
 <script>
-import { currencyOptions } from "@/constants";
+import {
+  currencyOptions,
+  rx_live,
+  needNumberMessage,
+  matchSelectMessage,
+  exchangeRate,
+} from "@/constants";
 export default {
   name: "HomeView",
-  rx_live: /^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/,
-  needNumberMessage: "You need to enter only positive numbers in both fields!",
-  matchSelectMessage: "You can not select same currency!",
+  initPrice: "0",
 
   data() {
     return {
       currencyOptions,
       exchangeSelect: currencyOptions[0].value,
       receiveSelect: currencyOptions[1].value,
-      exchangeInput: "0",
-      receiveInput: "0",
+      exchangeInput: this.$options.initPrice,
+      receiveInput: this.$options.initPrice,
       error: "",
     };
   },
@@ -57,8 +53,8 @@ export default {
     //   });
     // },
     validateInputParams() {
-      const isOkReceive = this.$options.rx_live.test(this.receiveInput);
-      const isOkExchange = this.$options.rx_live.test(this.exchangeInput);
+      const isOkReceive = rx_live.test(this.receiveInput);
+      const isOkExchange = rx_live.test(this.exchangeInput);
       const isMatchedSelect = this.exchangeSelect !== this.receiveSelect;
 
       if (isOkExchange && isOkReceive && isMatchedSelect) {
@@ -66,21 +62,54 @@ export default {
         return;
       }
 
-      this.error = !isMatchedSelect
-        ? this.$options.matchSelectMessage
-        : this.$options.needNumberMessage;
+      this.error = !isMatchedSelect ? matchSelectMessage : needNumberMessage;
     },
 
     onClickBtn() {
       console.log("Changed!");
     },
   },
+  computed: {
+    initialExchangeData() {
+      const isMatchedSelect = this.exchangeSelect !== this.receiveSelect;
+      const exchangeData = exchangeRate.find((c) => c.id === this.exchangeSelect);
+      const receiveData = exchangeRate.find((c) => c.id === this.receiveSelect);
+
+      return {
+        isMatchedSelect,
+        exchangeData,
+        receiveData,
+      };
+    },
+  },
   watch: {
     exchangeInput() {
-      console.log(this.exchangeInput);
+      const { isMatchedSelect, exchangeData, receiveData } = this.initialExchangeData;
+
+      if (!isNaN(+this.exchangeInput) && isMatchedSelect) {
+        if (exchangeData.rate > receiveData.rate) {
+          this.receiveInput = (this.exchangeInput * exchangeData.rate).toString();
+          return;
+        }
+        this.receiveInput = (this.exchangeInput / receiveData.rate).toString();
+      }
     },
     receiveInput() {
-      console.log(this.receiveInput);
+      const { isMatchedSelect, exchangeData, receiveData } = this.initialExchangeData;
+
+      if (!isNaN(+this.receiveInput) && isMatchedSelect) {
+        if (receiveData.rate > exchangeData.rate) {
+          this.exchangeInput = (this.receiveInput * receiveData.rate).toString();
+          return;
+        }
+        this.exchangeInput = (this.receiveInput / exchangeData.rate).toString();
+      }
+    },
+    exchangeSelect() {
+      this.exchangeInput = this.$options.initPrice;
+    },
+    receiveSelect() {
+      this.receiveInput = this.$options.initPrice;
     },
   },
   updated() {

@@ -4,6 +4,12 @@ export const currencyOptions = [
 ];
 
 export const exchangeRate = [
-  { name: "USD", rate: "40", reserved: "5000" },
-  { name: "UAH", rate: "1" },
+  { name: "UAH", id: "1", rate: "1" },
+  { name: "USD", id: "2", rate: "40", reserved: "5000" },
 ];
+
+export const rx_live = /^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/;
+
+export const needNumberMessage =
+  "You need to enter only positive numbers in both fields!";
+export const matchSelectMessage = "You can not select same currency!";
