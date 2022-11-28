@@ -1,48 +1,41 @@
 <template>
-  <div class="max-w-[1200px] mx-auto flex items-center flex-col px-5">
-    <h1 class="text-2xl">Exchanger</h1>
-    <div class="my-24 flex justify-between w-full">
-      <div>
-        <custom-select
-          v-model="exchangeSelect"
-          :class="{ 'border-2 border-rose-500': lackVolumeError }"
-          class="mr-4"
-          :options="currencyOptions"
-        />
-        <custom-input
-          :class="{ 'border-2 border-rose-500': lackVolumeError }"
-          v-model="exchangeInput"
-          placeholder="Exchange"
-        />
-      </div>
-      <div>
-        <custom-select
-          v-model="receiveSelect"
-          :class="{ 'border-2 border-rose-500': lackVolumeError }"
-          class="mr-4"
-          :options="currencyOptions"
-        />
-        <custom-input
-          :class="{ 'border-2 border-rose-500': lackVolumeError }"
-          v-model="receiveInput"
-          placeholder="Receive"
-        />
-      </div>
-    </div>
-    <div class="min-h-[25px]">
-      <span v-if="error" class="text-red-400">{{ error }}</span>
-    </div>
-    <custom-button @click="getExchange" :error="error">GO</custom-button>
-    <div class="flex justify-between w-full">
-      <exchange-rate-card :change-type="exchangeSelect" :receive-type="receiveSelect" />
-      <reserved-info-card>
-        <div v-if="reservedData.reserved">
-          {{ reservedData.reserved + " " + reservedData.name }}
+  <layout-default :layout-params="{ exchangeSelect, receiveSelect }">
+    <div class="max-w-[1200px] w-full mx-auto flex items-center flex-col px-5 flex-grow">
+      <h1 class="text-2xl">Exchanger</h1>
+      <div class="my-24 flex justify-between w-full">
+        <div>
+          <custom-select
+            v-model="exchangeSelect"
+            :class="{ 'border-2 border-rose-500': lackVolumeError }"
+            class="mr-4"
+            :options="currencyOptions"
+          />
+          <custom-input
+            :class="{ 'border-2 border-rose-500': lackVolumeError }"
+            v-model="exchangeInput"
+            placeholder="Exchange"
+          />
         </div>
-        <div v-else>----</div>
-      </reserved-info-card>
+        <div>
+          <custom-select
+            v-model="receiveSelect"
+            :class="{ 'border-2 border-rose-500': lackVolumeError }"
+            class="mr-4"
+            :options="currencyOptions"
+          />
+          <custom-input
+            :class="{ 'border-2 border-rose-500': lackVolumeError }"
+            v-model="receiveInput"
+            placeholder="Receive"
+          />
+        </div>
+      </div>
+      <div class="min-h-[25px]">
+        <span v-if="error" class="text-red-400">{{ error }}</span>
+      </div>
+      <custom-button @click="getExchange" :error="error">GO</custom-button>
     </div>
-  </div>
+  </layout-default>
 </template>
 
 <script>
@@ -54,17 +47,10 @@ import {
   exchangeRate,
   lackVolume,
 } from "@/constants";
-import ExchangeRateCard from "@/components/ExchangeRateCard";
-import ReservedInfoCard from "@/components/ReservedInfoCard";
 
 export default {
   name: "HomeView",
   initPrice: "0",
-
-  components: {
-    ExchangeRateCard,
-    ReservedInfoCard,
-  },
 
   data() {
     return {
@@ -86,6 +72,8 @@ export default {
           data: {
             currency: receiveData.name,
             amount: this.receiveInput,
+            exchangeSelect: this.exchangeSelect,
+            receiveSelect: this.receiveSelect,
           },
         },
       });
@@ -120,9 +108,6 @@ export default {
         receiveData,
         isOkVolume,
       };
-    },
-    reservedData() {
-      return exchangeRate.find((d) => d.id === this.receiveSelect);
     },
     lackVolumeError() {
       return this.error === lackVolume;
