@@ -32,7 +32,7 @@
     <div class="min-h-[25px]">
       <span v-if="error" class="text-red-400">{{ error }}</span>
     </div>
-    <custom-button @click="onClickBtn" :error="error">GO</custom-button>
+    <custom-button @click="getExchange" :error="error">GO</custom-button>
     <div class="flex justify-between w-full">
       <exchange-rate-card :change-type="exchangeSelect" :receive-type="receiveSelect" />
       <reserved-info-card>
@@ -77,17 +77,19 @@ export default {
     };
   },
   methods: {
-    // goNextP() {
-    //   this.$router.push({
-    //     name: "SuccessfulExchange",
-    //     params: {
-    //       data: {
-    //         currency: "USD",
-    //         amount: "140",
-    //       },
-    //     },
-    //   });
-    // },
+    getExchange() {
+      const { receiveData } = this.initialExchangeData;
+
+      this.$router.push({
+        name: "SuccessfulExchange",
+        params: {
+          data: {
+            currency: receiveData.name,
+            amount: this.receiveInput,
+          },
+        },
+      });
+    },
     validateInputParams() {
       const { isMatchedSelect, isOkVolume } = this.initialExchangeData;
       const isOkReceive = rx_live.test(this.receiveInput);
@@ -103,10 +105,6 @@ export default {
         : !isOkExchange || !isOkReceive
         ? needNumberMessage
         : lackVolume;
-    },
-
-    onClickBtn() {
-      console.log("Changed!");
     },
   },
   computed: {

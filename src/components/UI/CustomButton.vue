@@ -3,7 +3,7 @@
     :disabled="checkedErrors"
     @click="$emit('click')"
     :class="{ 'border-2 border-rose-500': checkedErrors }"
-    class="p-2 my-3 border-transparent border rounded-md min-w-[100px] bg-white text-black"
+    class="p-2 my-3 border-transparent border rounded-md min-w-[100px] bg-white text-black uppercase"
   >
     <span :class="{ 'text-rose-500': checkedErrors }">
       <slot></slot>
