@@ -1,21 +1,8 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import { HomeView, SuccessfulExchange } from "../views";
-Vue.use(VueRouter);
+import routes from "@/router/routes";
 
-const routes = [
-  {
-    path: "/",
-    name: "HomeView",
-    component: HomeView,
-  },
-  {
-    path: "/success-exchange",
-    name: "SuccessfulExchange",
-    component: SuccessfulExchange,
-    props: true,
-  },
-];
+Vue.use(VueRouter);
 
 const router = new VueRouter({
   mode: "history",
