@@ -47,9 +47,11 @@ import {
   exchangeRate,
   lackVolume,
 } from "@/constants";
+import { CustomInput, CustomSelect, CustomButton, LayoutDefault } from "@/components/UI";
 
 export default {
   name: "HomeView",
+  components: { CustomButton, CustomInput, CustomSelect, LayoutDefault },
   initPrice: "0",
 
   data() {

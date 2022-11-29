@@ -12,9 +12,10 @@
 </template>
 
 <script>
+import { CustomButton, LayoutDefault } from "@/components/UI";
 export default {
   name: "SuccessfulExchange",
-
+  components: { CustomButton,LayoutDefault },
   props: {
     data: {
       type: Object,
