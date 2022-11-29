@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="receivedData && exchangedData">
     <div class="uppercase mb-4">exchange rate:</div>
     <div>1 {{ exchangedData.name }} = {{ receivedData.prise + " " + receivedData.name }}</div>
   </div>
@@ -23,8 +23,14 @@ export default {
       return exchangeRate.find((option) => option.id === this.changeType);
     },
     receivedData() {
-      const { rate, name } = exchangeRate.find((option) => option.id === this.receiveType);
-      const prise = this.exchangedData.rate / rate;
+      const exchangeUnit = exchangeRate.find((option) => option.id === this.receiveType);
+
+      if (!exchangeUnit) {
+        return undefined;
+      }
+
+      const { rate, name } = exchangeUnit;
+      const prise = this.exchangedData ? this.exchangedData.rate / rate : "0";
 
       return { prise, name };
     },
