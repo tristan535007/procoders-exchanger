@@ -10,6 +10,8 @@ export const exchangeRate = [
 
 export const rx_live = /^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/;
 
-export const needNumberMessage = "You need to enter only positive numbers in both fields!";
-export const matchSelectMessage = "You can not select same currency!";
-export const lackVolume = "Overfloated reserve";
+export const errors = Object.freeze({
+  needNumberMessage: "You need to enter only positive numbers in both fields!",
+  matchSelectMessage: "You can not select same currency!",
+  lackVolume: "Overfloated reserve",
+});

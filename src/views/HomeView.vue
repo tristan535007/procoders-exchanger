@@ -39,14 +39,7 @@
 </template>
 
 <script>
-import {
-  currencyOptions,
-  rx_live,
-  needNumberMessage,
-  matchSelectMessage,
-  exchangeRate,
-  lackVolume,
-} from "@/constants";
+import { currencyOptions, rx_live, exchangeRate, errors } from "@/constants";
 import { CustomInput, CustomSelect, CustomButton, LayoutDefault } from "@/components/UI";
 
 export default {
@@ -82,6 +75,7 @@ export default {
     },
     validateInputParams() {
       const { isMatchedSelect, isOkVolume } = this.initialExchangeData;
+      const { needNumberMessage, matchSelectMessage, lackVolume } = errors;
       const isOkReceive = rx_live.test(this.receiveInput);
       const isOkExchange = rx_live.test(this.exchangeInput);
 
@@ -112,7 +106,7 @@ export default {
       };
     },
     lackVolumeError() {
-      return this.error === lackVolume;
+      return this.error === errors.lackVolume;
     },
   },
   watch: {
