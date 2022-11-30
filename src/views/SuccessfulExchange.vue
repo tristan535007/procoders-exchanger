@@ -1,21 +1,23 @@
 <template>
-  <layout-default
-    :layout-params="{ exchangeSelect: data.exchangeSelect, receiveSelect: data.receiveSelect }"
-  >
+  <div class="flex flex-col items-center h-full">
     <div class="flex flex-col items-center flex-grow">
-      <h1 v-if="data" class="text-green-500 text-2xl my-16">
+      <h1 v-if="data" class="text-green-500 text-2xl my-16 text-center">
         You successfully received {{ data.amount + " " + data.currency }}
       </h1>
       <custom-button class="mt-16" @click="goHomePage"> Go back</custom-button>
     </div>
-  </layout-default>
+    <footer-rate
+      :footer-data="{ exchangeSelect: data.exchangeSelect, receiveSelect: data.receiveSelect }"
+    />
+  </div>
 </template>
 
 <script>
-import { CustomButton, LayoutDefault } from "@/components/UI";
+import { CustomButton } from "@/components/UI";
+import FooterRate from "@/components/FooterRate";
 export default {
   name: "SuccessfulExchange",
-  components: { CustomButton,LayoutDefault },
+  components: { FooterRate, CustomButton },
   props: {
     data: {
       type: Object,

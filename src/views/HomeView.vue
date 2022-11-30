@@ -1,50 +1,50 @@
 <template>
-  <layout-default :layout-params="{ exchangeSelect, receiveSelect }">
-    <div class="max-w-[1200px] w-full mx-auto flex items-center flex-col px-5 flex-grow">
-      <h1 class="text-2xl">Exchanger</h1>
-      <div class="my-24 flex justify-between w-full">
-        <div>
-          <custom-select
-            v-model="exchangeSelect"
-            :class="{ 'border-2 border-rose-500': lackVolumeError }"
-            class="mr-4"
-            :options="currencyOptions"
-          />
-          <custom-input
-            :class="{ 'border-2 border-rose-500': lackVolumeError }"
-            v-model="exchangeInput"
-            placeholder="Exchange"
-          />
-        </div>
-        <div>
-          <custom-select
-            v-model="receiveSelect"
-            :class="{ 'border-2 border-rose-500': lackVolumeError }"
-            class="mr-4"
-            :options="currencyOptions"
-          />
-          <custom-input
-            :class="{ 'border-2 border-rose-500': lackVolumeError }"
-            v-model="receiveInput"
-            placeholder="Receive"
-          />
-        </div>
+  <div class="max-w-[1200px] w-full mx-auto flex items-center flex-col px-5 flex-grow">
+    <h1 class="text-2xl">Exchanger</h1>
+    <div class="my-24 flex justify-between w-full">
+      <div>
+        <custom-select
+          v-model="exchangeSelect"
+          :class="{ 'border-2 border-rose-500': lackVolumeError }"
+          class="mr-4"
+          :options="currencyOptions"
+        />
+        <custom-input
+          :class="{ 'border-2 border-rose-500': lackVolumeError }"
+          v-model="exchangeInput"
+          placeholder="Exchange"
+        />
       </div>
-      <div class="min-h-[25px]">
-        <span v-if="error" class="text-red-400">{{ error }}</span>
+      <div>
+        <custom-select
+          v-model="receiveSelect"
+          :class="{ 'border-2 border-rose-500': lackVolumeError }"
+          class="mr-4"
+          :options="currencyOptions"
+        />
+        <custom-input
+          :class="{ 'border-2 border-rose-500': lackVolumeError }"
+          v-model="receiveInput"
+          placeholder="Receive"
+        />
       </div>
-      <custom-button @click="getExchange" :error="error">GO</custom-button>
     </div>
-  </layout-default>
+    <div class="min-h-[25px]">
+      <span v-if="error" class="text-red-400">{{ error }}</span>
+    </div>
+    <custom-button @click="getExchange" :error="error">GO</custom-button>
+    <footer-rate :footer-data="{ receiveSelect, exchangeSelect }" />
+  </div>
 </template>
 
 <script>
 import { currencyOptions, rx_live, exchangeRate, errors } from "@/constants";
-import { CustomInput, CustomSelect, CustomButton, LayoutDefault } from "@/components/UI";
+import { CustomInput, CustomSelect, CustomButton } from "@/components/UI";
+import FooterRate from "@/components/FooterRate";
 
 export default {
   name: "HomeView",
-  components: { CustomButton, CustomInput, CustomSelect, LayoutDefault },
+  components: { FooterRate, CustomButton, CustomInput, CustomSelect },
   initPrice: "0",
 
   data() {
