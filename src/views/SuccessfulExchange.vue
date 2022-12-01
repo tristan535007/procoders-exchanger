@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-center h-full">
+  <div v-if="data" class="flex flex-col items-center h-full">
     <div class="flex flex-col items-center flex-grow">
       <h1 v-if="data" class="text-green-500 text-2xl my-16 text-center">
         You successfully received {{ data.amount + " " + data.currency }}
