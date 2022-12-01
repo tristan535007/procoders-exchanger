@@ -1,6 +1,7 @@
 <template>
   <input
-    v-model="inputModel"
+    :value="checkedValue"
+    @input="$emit('input', $event.target.value)"
     type="text"
     class="p-2.5 bg-transparent border-white border rounded-sm placeholder:text-white min-h-[56px]"
   />
@@ -9,23 +10,14 @@
 <script>
 export default {
   name: "custom-input",
-  model: {
-    prop: "modelValue",
-    event: "update:modelValue",
-  },
   props: {
-    modelValue: {
+    value: {
       type: String,
     },
   },
   computed: {
-    inputModel: {
-      get() {
-        return this.modelValue;
-      },
-      set(value) {
-        this.$emit("update:modelValue", value);
-      },
+    checkedValue() {
+      return !isNaN(+this.value) ? +this.value.toString() : this.value;
     },
   },
 };

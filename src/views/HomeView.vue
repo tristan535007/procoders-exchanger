@@ -38,22 +38,21 @@
 </template>
 
 <script>
-import { currencyOptions, rx_live, exchangeRate, errors } from "@/constants";
+import { currencyOptions, rx_live, exchangeRate, errors, initPrice } from "@/constants";
 import { CustomInput, CustomSelect, CustomButton } from "@/components/UI";
 import FooterRate from "@/components/FooterRate";
 
 export default {
   name: "HomeView",
   components: { FooterRate, CustomButton, CustomInput, CustomSelect },
-  initPrice: "0",
 
   data() {
     return {
       currencyOptions,
       exchangeSelect: currencyOptions[0].value,
       receiveSelect: currencyOptions[1].value,
-      exchangeInput: this.$options.initPrice,
-      receiveInput: this.$options.initPrice,
+      exchangeInput: initPrice,
+      receiveInput: initPrice,
       error: "",
     };
   },
@@ -114,7 +113,7 @@ export default {
       const { isMatchedSelect, exchangeData, receiveData } = this.initialExchangeData;
 
       if (!isNaN(+this.exchangeInput) && isMatchedSelect) {
-        if (exchangeData.rate > receiveData.rate) {
+        if (+exchangeData.rate > +receiveData.rate) {
           this.receiveInput = (this.exchangeInput * exchangeData.rate).toString();
           return;
         }
@@ -125,7 +124,7 @@ export default {
       const { isMatchedSelect, exchangeData, receiveData } = this.initialExchangeData;
 
       if (!isNaN(+this.receiveInput) && isMatchedSelect) {
-        if (receiveData.rate > exchangeData.rate) {
+        if (+receiveData.rate > +exchangeData.rate) {
           this.exchangeInput = (this.receiveInput * receiveData.rate).toString();
 
           return;
@@ -134,10 +133,10 @@ export default {
       }
     },
     exchangeSelect() {
-      this.exchangeInput = this.$options.initPrice;
+      this.exchangeInput = initPrice;
     },
     receiveSelect() {
-      this.receiveInput = this.$options.initPrice;
+      this.receiveInput = initPrice;
     },
   },
   updated() {

@@ -15,3 +15,5 @@ export const errors = Object.freeze({
   matchSelectMessage: "You can not select same currency!",
   lackVolume: "Overfloated reserve",
 });
+
+export const initPrice = "0";
