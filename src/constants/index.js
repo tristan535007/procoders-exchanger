@@ -14,6 +14,7 @@ export const errors = Object.freeze({
   needNumberMessage: "You need to enter only positive numbers in both fields!",
   matchSelectMessage: "You can not select same currency!",
   lackVolume: "Overfloated reserve",
+  zeroVolume: "You can't exchange 0",
 });
 
 export const initPrice = "0";

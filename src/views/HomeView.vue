@@ -4,29 +4,21 @@
     <div class="my-24 flex justify-between w-full">
       <div>
         <custom-select
+          :class="lackVolumeError"
           v-model="exchangeSelect"
-          :class="{ 'border-2 border-rose-500': lackVolumeError }"
           class="mr-4"
           :options="currencyOptions"
         />
-        <custom-input
-          :class="{ 'border-2 border-rose-500': lackVolumeError }"
-          v-model="exchangeInput"
-          placeholder="Exchange"
-        />
+        <custom-input :class="lackVolumeError" v-model="exchangeInput" placeholder="Exchange" />
       </div>
       <div>
         <custom-select
+          :class="lackVolumeError"
           v-model="receiveSelect"
-          :class="{ 'border-2 border-rose-500': lackVolumeError }"
           class="mr-4"
           :options="currencyOptions"
         />
-        <custom-input
-          :class="{ 'border-2 border-rose-500': lackVolumeError }"
-          v-model="receiveInput"
-          placeholder="Receive"
-        />
+        <custom-input :class="lackVolumeError" v-model="receiveInput" placeholder="Receive" />
       </div>
     </div>
     <div class="min-h-[25px]">
@@ -58,13 +50,11 @@ export default {
   },
   methods: {
     getExchange() {
-      const { receiveData } = this.initialExchangeData;
-
       this.$router.push({
         name: "SuccessfulExchange",
         params: {
           data: {
-            currency: receiveData.name,
+            currency: this.receivedData.name,
             amount: this.receiveInput,
             exchangeSelect: this.exchangeSelect,
             receiveSelect: this.receiveSelect,
@@ -73,63 +63,66 @@ export default {
       });
     },
     validateInputParams() {
-      const { isMatchedSelect, isOkVolume } = this.initialExchangeData;
-      const { needNumberMessage, matchSelectMessage, lackVolume } = errors;
+      const { needNumberMessage, matchSelectMessage, lackVolume, zeroVolume } = errors;
       const isOkReceive = rx_live.test(this.receiveInput);
       const isOkExchange = rx_live.test(this.exchangeInput);
+      const isOkVolume = this.receivedData?.reserved
+        ? +this.receiveInput < +this.receivedData.reserved
+        : true;
+      const isZero = this.exchangeInput === "0" || this.receiveInput === "0";
 
-      if (isOkExchange && isOkReceive && isMatchedSelect && isOkVolume) {
+      if (isOkExchange && isOkReceive && this.matchedSelect && isOkVolume && !isZero) {
         this.error = "";
         return;
       }
 
-      this.error = !isMatchedSelect
+      this.error = !this.matchedSelect
         ? matchSelectMessage
         : !isOkExchange || !isOkReceive
         ? needNumberMessage
+        : isZero
+        ? zeroVolume
         : lackVolume;
     },
   },
   computed: {
-    initialExchangeData() {
-      const isMatchedSelect = this.exchangeSelect !== this.receiveSelect;
-      const exchangeData = exchangeRate.find((c) => c.id === this.exchangeSelect);
-      const receiveData = exchangeRate.find((c) => c.id === this.receiveSelect);
-      const isOkVolume = receiveData?.reserved ? +this.receiveInput < +receiveData.reserved : true;
-
-      return {
-        isMatchedSelect,
-        exchangeData,
-        receiveData,
-        isOkVolume,
-      };
+    matchedSelect() {
+      return this.exchangeSelect !== this.receiveSelect;
+    },
+    exchangedData() {
+      return exchangeRate.find((c) => c.id === this.exchangeSelect);
+    },
+    receivedData() {
+      return exchangeRate.find((c) => c.id === this.receiveSelect);
     },
     lackVolumeError() {
-      return this.error === errors.lackVolume;
+      return this.error === errors.lackVolume ? "border-2 border-rose-500" : "border-white border";
     },
   },
   watch: {
     exchangeInput() {
-      const { isMatchedSelect, exchangeData, receiveData } = this.initialExchangeData;
+      const { rate: recRate } = this.receivedData;
+      const { rate: excRate } = this.exchangedData;
 
-      if (!isNaN(+this.exchangeInput) && isMatchedSelect) {
-        if (+exchangeData.rate > +receiveData.rate) {
-          this.receiveInput = (this.exchangeInput * exchangeData.rate).toString();
+      if (!isNaN(+this.exchangeInput) && this.matchedSelect) {
+        if (+excRate > +recRate) {
+          this.receiveInput = (this.exchangeInput * excRate).toString();
           return;
         }
-        this.receiveInput = (this.exchangeInput / receiveData.rate).toString();
+        this.receiveInput = (this.exchangeInput / recRate).toString();
       }
     },
     receiveInput() {
-      const { isMatchedSelect, exchangeData, receiveData } = this.initialExchangeData;
+      const { rate: recRate } = this.receivedData;
+      const { rate: excRate } = this.exchangedData;
 
-      if (!isNaN(+this.receiveInput) && isMatchedSelect) {
-        if (+receiveData.rate > +exchangeData.rate) {
-          this.exchangeInput = (this.receiveInput * receiveData.rate).toString();
+      if (!isNaN(+this.receiveInput) && this.matchedSelect) {
+        if (+recRate > +excRate) {
+          this.exchangeInput = (this.receiveInput * recRate).toString();
 
           return;
         }
-        this.exchangeInput = (this.receiveInput / exchangeData.rate).toString();
+        this.exchangeInput = (this.receiveInput / excRate).toString();
       }
     },
     exchangeSelect() {
@@ -140,6 +133,9 @@ export default {
     },
   },
   updated() {
+    this.validateInputParams();
+  },
+  beforeMount() {
     this.validateInputParams();
   },
 };

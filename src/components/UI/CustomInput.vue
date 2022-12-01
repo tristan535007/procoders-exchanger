@@ -3,7 +3,7 @@
     :value="checkedValue"
     @input="$emit('input', $event.target.value)"
     type="text"
-    class="p-2.5 bg-transparent border-white border rounded-sm placeholder:text-white min-h-[56px]"
+    class="p-2.5 bg-transparent rounded-sm placeholder:text-white min-h-[56px]"
   />
 </template>
 

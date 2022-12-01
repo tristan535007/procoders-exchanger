@@ -1,7 +1,7 @@
 <template>
   <select
     v-model="selectModel"
-    class="p-2.5 bg-transparent border-white border rounded-sm min-h-[56px]"
+    class="p-2.5 bg-transparent rounded-sm min-h-[56px]"
   >
     <option
       v-for="option in options"
