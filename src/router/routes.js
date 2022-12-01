@@ -1,15 +1,13 @@
-import { HomeView, SuccessfulExchange } from "@/views";
-
 export default [
   {
     path: "/",
     name: "HomeView",
-    component: HomeView,
+    component: () => import("@/views/HomeView"),
   },
   {
     path: "/success-exchange",
     name: "SuccessfulExchange",
-    component: SuccessfulExchange,
+    component: () => import("@/views/SuccessfulExchange"),
     props: true,
   },
 ];
