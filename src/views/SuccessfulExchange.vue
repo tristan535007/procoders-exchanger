@@ -7,7 +7,11 @@
       <custom-button class="mt-16" @click="goHomePage"> Go back</custom-button>
     </div>
     <footer-rate
-      :footer-data="{ exchangeSelect: data.exchangeSelect, receiveSelect: data.receiveSelect }"
+      :footer-data="{
+        exchangeSelect: data.exchangeSelect,
+        receiveSelect: data.receiveSelect,
+        receivedAmount: data.amount,
+      }"
     />
   </div>
 </template>

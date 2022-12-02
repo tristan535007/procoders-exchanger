@@ -6,7 +6,7 @@
     />
     <reserved-info-card>
       <div v-if="reservedData.reserved">
-        {{ reservedData.reserved + " " + reservedData.name }}
+        {{ displayedReservedAmount }}
       </div>
       <div v-else>----</div>
     </reserved-info-card>
@@ -31,6 +31,12 @@ export default {
   computed: {
     reservedData() {
       return exchangeRate.find((d) => d.id === this.footerData.receiveSelect);
+    },
+    displayedReservedAmount() {
+      const { reserved, name } = this.reservedData;
+      return this.footerData?.receivedAmount
+        ? `${reserved - this.footerData.receivedAmount} ${name}`
+        : `${reserved} ${name}`;
     },
   },
 };
