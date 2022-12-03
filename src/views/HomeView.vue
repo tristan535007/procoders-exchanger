@@ -33,6 +33,7 @@
 import { currencyOptions, rx_live, exchangeRate, errors, initPrice } from "@/constants";
 import { CustomInput, CustomSelect, CustomButton } from "@/components/UI";
 import FooterRate from "@/components/FooterRate";
+import { urlQueryCreator, getUrlQuery, roundAmount } from "@/helpers";
 
 export default {
   name: "HomeView",
@@ -52,13 +53,10 @@ export default {
     getExchange() {
       this.$router.push({
         name: "SuccessfulExchange",
-        params: {
-          data: {
-            currency: this.receivedData.name,
-            amount: this.receiveInput,
-            exchangeSelect: this.exchangeSelect,
-            receiveSelect: this.receiveSelect,
-          },
+        query: {
+          receivedAmount: this.receiveInput,
+          exchangeSelect: this.exchangeSelect,
+          receiveSelect: this.receiveSelect,
         },
       });
     },
@@ -106,10 +104,10 @@ export default {
 
       if (!isNaN(+this.exchangeInput) && this.matchedSelect) {
         if (+excRate > +recRate) {
-          this.receiveInput = (this.exchangeInput * excRate).toString();
+          this.receiveInput = roundAmount(this.exchangeInput * excRate);
           return;
         }
-        this.receiveInput = (this.exchangeInput / recRate).toString();
+        this.receiveInput = roundAmount(this.exchangeInput / recRate);
       }
     },
     receiveInput() {
@@ -118,24 +116,32 @@ export default {
 
       if (!isNaN(+this.receiveInput) && this.matchedSelect) {
         if (+recRate > +excRate) {
-          this.exchangeInput = (this.receiveInput * recRate).toString();
+          this.exchangeInput = roundAmount(this.receiveInput * recRate);
 
           return;
         }
-        this.exchangeInput = (this.receiveInput / excRate).toString();
+        this.exchangeInput = roundAmount(this.receiveInput / excRate);
       }
-    },
-    exchangeSelect() {
-      this.exchangeInput = initPrice;
-    },
-    receiveSelect() {
-      this.receiveInput = initPrice;
     },
   },
   updated() {
+    const queryData = {
+      exchangeInput: this.exchangeInput,
+      receiveInput: this.receiveInput,
+      exchangeSelect: this.exchangeSelect,
+      receiveSelect: this.receiveSelect,
+    };
+
     this.validateInputParams();
+    urlQueryCreator.call(this, queryData);
+
+    if (!this.matchedSelect) {
+      this.receiveInput = initPrice;
+      this.exchangeInput = initPrice;
+    }
   },
   beforeMount() {
+    getUrlQuery.call(this);
     this.validateInputParams();
   },
 };

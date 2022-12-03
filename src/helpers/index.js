@@ -11,3 +11,18 @@ export function urlQueryCreator(params) {
         .join("&")
   );
 }
+
+export function getUrlQuery() {
+  const query = Object.entries(this.$route.query);
+  if (query.length === 0) {
+    return;
+  }
+
+  query.forEach(([key, value]) => {
+    this[key] = value;
+  });
+}
+
+export const roundAmount = (num) => {
+  return +num.toFixed(3).toString();
+};
