@@ -12,7 +12,7 @@ export default {
   name: "custom-input",
   props: {
     value: {
-      type: String,
+      type: [String, Number],
     },
   },
   computed: {
