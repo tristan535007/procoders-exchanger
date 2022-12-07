@@ -1,6 +1,7 @@
 <template>
   <select
-    v-model="selectModel"
+    :value="modelValue"
+    @input="$emit('input', $event.target.value)"
     class="p-2.5 bg-transparent rounded-sm min-h-[56px]"
   >
     <option
@@ -26,16 +27,6 @@ export default {
     options: {
       type: Array,
       default: () => [],
-    },
-  },
-  computed: {
-    selectModel: {
-      get() {
-        return this.modelValue;
-      },
-      set(value) {
-        this.$emit("update:modelValue", value);
-      },
     },
   },
 };

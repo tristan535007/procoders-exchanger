@@ -6,6 +6,7 @@
         <custom-select
           :class="lackVolumeError"
           v-model="exchangeSelect"
+          @input="setExchangeSelect"
           class="mr-4"
           :options="currencyOptions"
         />
@@ -15,6 +16,7 @@
         <custom-select
           :class="lackVolumeError"
           v-model="receiveSelect"
+          @input="setReceiveSelect"
           class="mr-4"
           :options="currencyOptions"
         />
@@ -25,13 +27,14 @@
       <span v-if="error" class="text-red-400">{{ error }}</span>
     </div>
     <custom-button @click="getExchange" :error="error">GO</custom-button>
-    <footer-rate :footer-data="{ receiveSelect, exchangeSelect }" />
+    <footer-rate />
   </div>
 </template>
 
 <script>
-import { currencyOptions, rx_live, exchangeRate, errors, initPrice } from "@/constants";
+import { rx_live, errors, initPrice } from "@/constants";
 import { CustomInput, CustomSelect, CustomButton } from "@/components/UI";
+import { mapGetters, mapState } from "vuex";
 import FooterRate from "@/components/FooterRate";
 
 export default {
@@ -40,26 +43,24 @@ export default {
 
   data() {
     return {
-      currencyOptions,
-      exchangeSelect: currencyOptions[0].value,
-      receiveSelect: currencyOptions[1].value,
       exchangeInput: initPrice,
       receiveInput: initPrice,
-      error: "",
     };
   },
   methods: {
+    setExchangeSelect(v) {
+      this.$store.commit("setExchangeSelect", v);
+    },
+    setReceiveSelect(v) {
+      this.$store.commit("setReceiveSelect", v);
+    },
     getExchange() {
+      this.$store.commit("setReceiveData", {
+        amount: this.receiveInput,
+        currency: this.receivedData?.name,
+      });
       this.$router.push({
         name: "SuccessfulExchange",
-        params: {
-          data: {
-            currency: this.receivedData.name,
-            amount: this.receiveInput,
-            exchangeSelect: this.exchangeSelect,
-            receiveSelect: this.receiveSelect,
-          },
-        },
       });
     },
     validateInputParams() {
@@ -72,31 +73,32 @@ export default {
       const isZero = this.exchangeInput === "0" || this.receiveInput === "0";
 
       if (isOkExchange && isOkReceive && this.matchedSelect && isOkVolume && !isZero) {
-        this.error = "";
+        this.$store.commit("setError", "");
         return;
       }
 
-      this.error = !this.matchedSelect
+      const errorMessage = !this.matchedSelect
         ? matchSelectMessage
         : !isOkExchange || !isOkReceive
         ? needNumberMessage
         : isZero
         ? zeroVolume
         : lackVolume;
+
+      this.$store.commit("setError", errorMessage);
     },
   },
   computed: {
-    matchedSelect() {
-      return this.exchangeSelect !== this.receiveSelect;
-    },
-    exchangedData() {
-      return exchangeRate.find((c) => c.id === this.exchangeSelect);
-    },
-    receivedData() {
-      return exchangeRate.find((c) => c.id === this.receiveSelect);
-    },
-    lackVolumeError() {
-      return this.error === errors.lackVolume ? "border-2 border-rose-500" : "border-white border";
+    ...mapState({
+      currencyOptions: (state) => state.exchange.currencyOptions,
+      exchangeSelect: (state) => state.exchange.exchangeSelect,
+      receiveSelect: (state) => state.exchange.receiveSelect,
+      error: (state) => state.exchange.error,
+    }),
+    ...mapGetters(["matchedSelect", "exchangedData", "receivedData", "lackVolumeError"]),
+    exchangeVal: {
+      get: () => this.exchangeSelect,
+      set: (val) => this.$store.commit("setExchangeSelect", val),
     },
   },
   watch: {

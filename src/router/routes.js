@@ -8,6 +8,5 @@ export default [
     path: "/success-exchange",
     name: "SuccessfulExchange",
     component: () => import("@/views/SuccessfulExchange"),
-    props: true,
   },
 ];

@@ -1,40 +1,35 @@
 <template>
-  <div v-if="data" class="flex flex-col items-center h-full">
+  <div v-if="receiveData" class="flex flex-col items-center h-full">
     <div class="flex flex-col items-center flex-grow">
-      <h1 v-if="data" class="text-green-500 text-2xl my-16 text-center">
-        You successfully received {{ data.amount + " " + data.currency }}
+      <h1 class="text-green-500 text-2xl my-16 text-center">
+        You successfully received {{ receiveData.amount + " " + receiveData.currency }}
       </h1>
       <custom-button class="mt-16" @click="goHomePage"> Go back</custom-button>
     </div>
-    <footer-rate
-      :footer-data="{
-        exchangeSelect: data.exchangeSelect,
-        receiveSelect: data.receiveSelect,
-        receivedAmount: data.amount,
-      }"
-    />
+    <footer-rate />
   </div>
 </template>
 
 <script>
 import { CustomButton } from "@/components/UI";
+import { mapState } from "vuex";
 import FooterRate from "@/components/FooterRate";
 export default {
   name: "SuccessfulExchange",
   components: { FooterRate, CustomButton },
-  props: {
-    data: {
-      type: Object,
-      default: null,
-    },
-  },
   methods: {
     goHomePage() {
+      this.$store.commit("setReceiveData", null);
       this.$router.push("/");
     },
   },
+  computed: {
+    ...mapState({
+      receiveData: (state) => state.exchange.receiveData,
+    }),
+  },
   created() {
-    if (!this.data) {
+    if (!this.receiveData) {
       this.goHomePage();
     }
   },

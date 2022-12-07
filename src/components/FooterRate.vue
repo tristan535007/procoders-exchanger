@@ -1,11 +1,8 @@
 <template>
   <footer class="flex justify-between w-full my-7 px-5">
-    <exchange-rate-card
-      :change-type="footerData.exchangeSelect"
-      :receive-type="footerData.receiveSelect"
-    />
+    <exchange-rate-card />
     <reserved-info-card>
-      <div v-if="reservedData.reserved">
+      <div v-if="receivedData.reserved">
         {{ displayedReservedAmount }}
       </div>
       <div v-else>----</div>
@@ -16,26 +13,21 @@
 <script>
 import ExchangeRateCard from "@/components/ExchangeRateCard";
 import ReservedInfoCard from "@/components/ReservedInfoCard";
-import { exchangeRate } from "@/constants";
+import { mapGetters, mapState } from "vuex";
 export default {
   components: {
     ExchangeRateCard,
     ReservedInfoCard,
   },
-  props: {
-    footerData: {
-      type: Object,
-      required: true,
-    },
-  },
   computed: {
-    reservedData() {
-      return exchangeRate.find((d) => d.id === this.footerData.receiveSelect);
-    },
+    ...mapState({
+      receiveData: (state) => state.exchange.receiveData,
+    }),
+    ...mapGetters(["receivedData"]),
     displayedReservedAmount() {
-      const { reserved, name } = this.reservedData;
-      return this.footerData?.receivedAmount
-        ? `${reserved - this.footerData.receivedAmount} ${name}`
+      const { reserved, name } = this.receivedData;
+      return this.receiveData
+        ? `${reserved - this.receiveData.amount} ${name}`
         : `${reserved} ${name}`;
     },
   },
