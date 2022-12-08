@@ -2,7 +2,7 @@
   <div v-if="calculatedRate">
     <div class="uppercase mb-4">exchange rate:</div>
     <div>
-      1 {{ calculatedRate.exchangeName }} = {{ calculatedRate.prise + " " + calculatedRate.name }}
+      1 {{ calculatedRate.exchangeName }} = {{ calculatedRate.price + " " + calculatedRate.name }}
     </div>
   </div>
 </template>

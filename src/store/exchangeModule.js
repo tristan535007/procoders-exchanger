@@ -28,9 +28,9 @@ export default {
       if (!rate || !name || !exchangeName) {
         return undefined;
       }
-      const prise = getters.exchangedData ? getters.exchangedData.rate / rate : "0";
+      const price = getters.exchangedData ? getters.exchangedData.rate / rate : "0";
 
-      return { prise, name, exchangeName };
+      return { price, name, exchangeName };
     },
   },
   mutations: {
