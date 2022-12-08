@@ -73,16 +73,15 @@ export default {
 
       if (isOkExchange && isOkReceive && this.matchedSelect && isOkVolume && !isZero) {
         this.error = "";
-        return;
+      } else if (!this.matchedSelect) {
+        this.error = matchSelectMessage;
+      } else if (!isOkExchange || !isOkReceive) {
+        this.error = needNumberMessage;
+      } else if (isZero) {
+        this.error = zeroVolume;
+      } else {
+        this.error = lackVolume;
       }
-
-      this.error = !this.matchedSelect
-        ? matchSelectMessage
-        : !isOkExchange || !isOkReceive
-        ? needNumberMessage
-        : isZero
-        ? zeroVolume
-        : lackVolume;
     },
   },
   computed: {
