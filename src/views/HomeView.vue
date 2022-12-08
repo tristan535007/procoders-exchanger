@@ -27,7 +27,6 @@
       <span v-if="error" class="text-red-400">{{ error }}</span>
     </div>
     <custom-button @click="getExchange" :error="error">GO</custom-button>
-    <footer-rate />
   </div>
 </template>
 
@@ -35,11 +34,10 @@
 import { rx_live, errors, initPrice } from "@/constants";
 import { CustomInput, CustomSelect, CustomButton } from "@/components/UI";
 import { mapGetters, mapState } from "vuex";
-import FooterRate from "@/components/FooterRate";
 
 export default {
   name: "HomeView",
-  components: { FooterRate, CustomButton, CustomInput, CustomSelect },
+  components: { CustomButton, CustomInput, CustomSelect },
 
   data() {
     return {
@@ -71,19 +69,19 @@ export default {
         ? +this.receiveInput < +this.receivedData.reserved
         : true;
       const isZero = this.exchangeInput === "0" || this.receiveInput === "0";
+      let errorMessage = "";
 
       if (isOkExchange && isOkReceive && this.matchedSelect && isOkVolume && !isZero) {
-        this.$store.commit("setError", "");
-        return;
+        errorMessage = "";
+      } else if (!this.matchedSelect) {
+        errorMessage = matchSelectMessage;
+      } else if (!isOkExchange || !isOkReceive) {
+        errorMessage = needNumberMessage;
+      } else if (isZero) {
+        errorMessage = zeroVolume;
+      } else {
+        errorMessage = lackVolume;
       }
-
-      const errorMessage = !this.matchedSelect
-        ? matchSelectMessage
-        : !isOkExchange || !isOkReceive
-        ? needNumberMessage
-        : isZero
-        ? zeroVolume
-        : lackVolume;
 
       this.$store.commit("setError", errorMessage);
     },

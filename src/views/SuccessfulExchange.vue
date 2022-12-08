@@ -6,17 +6,15 @@
       </h1>
       <custom-button class="mt-16" @click="goHomePage"> Go back</custom-button>
     </div>
-    <footer-rate />
   </div>
 </template>
 
 <script>
 import { CustomButton } from "@/components/UI";
 import { mapState } from "vuex";
-import FooterRate from "@/components/FooterRate";
 export default {
   name: "SuccessfulExchange",
-  components: { FooterRate, CustomButton },
+  components: { CustomButton },
   methods: {
     goHomePage() {
       this.$store.commit("setReceiveData", null);

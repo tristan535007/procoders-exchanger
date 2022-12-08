@@ -4,11 +4,13 @@
   >
     <nav-bar />
     <router-view />
+    <footer-rate />
   </div>
 </template>
 <script>
 import NavBar from "@/components/NavBar";
+import FooterRate from "@/components/FooterRate";
 export default {
-  components: { NavBar },
+  components: { NavBar, FooterRate },
 };
 </script>
