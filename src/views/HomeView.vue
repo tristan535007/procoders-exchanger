@@ -133,7 +133,7 @@ export default {
     };
 
     this.validateInputParams();
-    urlQueryCreator.call(this, queryData);
+    urlQueryCreator(queryData);
 
     if (!this.matchedSelect) {
       this.receiveInput = initPrice;
@@ -141,7 +141,9 @@ export default {
     }
   },
   beforeMount() {
-    getUrlQuery.call(this);
+    getUrlQuery()?.forEach(([key, value]) => {
+      this[key] = value;
+    });
     this.validateInputParams();
   },
 };

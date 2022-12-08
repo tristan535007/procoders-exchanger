@@ -1,8 +1,12 @@
+import { useRoute } from "vue-router/composables";
+
 export function urlQueryCreator(params) {
+  const { path } = useRoute();
+
   history.pushState(
     {},
     null,
-    this.$route.path +
+    path +
       "?" +
       Object.keys(params)
         .map((key) => {
@@ -13,14 +17,14 @@ export function urlQueryCreator(params) {
 }
 
 export function getUrlQuery() {
-  const query = Object.entries(this.$route.query);
+  const { query: urlQuery } = useRoute();
+  const query = Object.entries(urlQuery);
+
   if (query.length === 0) {
     return;
   }
 
-  query.forEach(([key, value]) => {
-    this[key] = value;
-  });
+  return query;
 }
 
 export const roundAmount = (num) => {
